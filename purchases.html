@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchases — ProFix ERP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><span>ProFix ERP</span></div>
+      <ul class="nav-menu">
+        <li><a href="dashboard.html"><span class="nav-label">Dashboard</span></a></li>
+        <li><a href="products.html"><span class="nav-label">Products</span></a></li>
+        <li><a href="customers.html"><span class="nav-label">Customers</span></a></li>
+        <li><a href="suppliers.html"><span class="nav-label">Suppliers</span></a></li>
+        <li><a href="warehouse.html"><span class="nav-label">Warehouse</span></a></li>
+        <li><a href="sales.html"><span class="nav-label">Sales</span></a></li>
+        <li><a href="purchases.html" class="active"><span class="nav-label">Purchases</span></a></li>
+        <li><a href="maintenance.html"><span class="nav-label">Maintenance</span></a></li>
+        <li><a href="reports.html"><span class="nav-label">Reports</span></a></li>
+        <li><a href="settings.html"><span class="nav-label">Settings</span></a></li>
+      </ul>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="main-content">
+      <nav class="navbar">
+        <button class="navbar-toggle" id="sidebarToggle">☰</button>
+        <div class="navbar-search"><input type="text" id="globalSearch" placeholder="Search..."></div>
+        <div class="navbar-actions"><button class="icon-btn" id="themeToggle">🌓</button><div class="navbar-user"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Admin</span></div><a href="#" id="logoutBtn" class="btn btn-sm btn-secondary">Logout</a></div>
+      </nav>
+      <div class="page-content">
+        <div class="page-header"><div><h1>Purchase Orders</h1><p>Manage supplier purchases</p></div><button class="btn btn-primary" id="addPurchaseBtn">+ New Purchase</button></div>
+        <div class="card"><div class="card-body table-wrap">
+          <table><thead><tr><th>Order No</th><th>Supplier</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="purchasesBody"></tbody></table>
+        </div><div class="pagination" id="pagination"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="purchaseModal"><div class="modal"><div class="modal-header">New Purchase Order<button data-close-modal class="icon-btn">✕</button></div>
+    <form id="purchaseForm"><div class="modal-body">
+      <div class="form-group"><label>Supplier</label><select name="supplierId" id="purchaseSupplier" class="form-control" required></select></div>
+      <div class="form-row"><div class="form-group"><label>Product</label><select name="productId" id="purchaseProduct" class="form-control" required></select></div><div class="form-group"><label>Quantity</label><input name="qty" type="number" class="form-control" required min="1"></div></div>
+      <div class="form-group"><label>Status</label><select name="status" class="form-control"><option>Pending</option><option>Received</option></select></div>
+    </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-close-modal>Cancel</button><button type="submit" class="btn btn-primary">Create Order</button></div></form></div></div>
+  <script src="js/app.js"></script><script src="js/sales.js"></script>
+  <script>document.querySelectorAll('.nav-menu a').forEach((a,i)=>{a.insertAdjacentHTML('afterbegin',[Icons.dashboard,Icons.products,Icons.customers,Icons.suppliers,Icons.warehouse,Icons.sales,Icons.purchases,Icons.maintenance,Icons.reports,Icons.settings][i]);});document.querySelector('.sidebar-brand').insertAdjacentHTML('afterbegin',Icons.logo);</script>
+</body></html>
