@@ -1,71 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — ProFix ERP</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/responsive.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings - ProFix ERP</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-  <div class="app-layout">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><span>ProFix ERP</span></div>
-      <ul class="nav-menu">
-        <li><a href="dashboard.html"><span class="nav-label">Dashboard</span></a></li>
-        <li><a href="products.html"><span class="nav-label">Products</span></a></li>
-        <li><a href="customers.html"><span class="nav-label">Customers</span></a></li>
-        <li><a href="suppliers.html"><span class="nav-label">Suppliers</span></a></li>
-        <li><a href="warehouse.html"><span class="nav-label">Warehouse</span></a></li>
-        <li><a href="sales.html"><span class="nav-label">Sales</span></a></li>
-        <li><a href="purchases.html"><span class="nav-label">Purchases</span></a></li>
-        <li><a href="maintenance.html"><span class="nav-label">Maintenance</span></a></li>
-        <li><a href="reports.html"><span class="nav-label">Reports</span></a></li>
-        <li><a href="settings.html" class="active"><span class="nav-label">Settings</span></a></li>
-      </ul>
-    </aside>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="main-content">
-      <nav class="navbar">
-        <button class="navbar-toggle" id="sidebarToggle">☰</button>
-        <div class="navbar-search"><input type="text" id="globalSearch" placeholder="Search..."></div>
-        <div class="navbar-actions"><button class="icon-btn" id="themeToggle">🌓</button><div class="navbar-user"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Admin</span></div><a href="#" id="logoutBtn" class="btn btn-sm btn-secondary">Logout</a></div>
-      </nav>
-      <div class="page-content">
-        <div class="page-header"><div><h1>Settings</h1><p>Configure your ERP system</p></div></div>
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="tabCompany">Company</button>
-          <button class="tab-btn" data-tab="tabProfile">Profile</button>
-          <button class="tab-btn" data-tab="tabTheme">Appearance</button>
+    <div class="app-container">
+        <!-- Sidebar placeholder -->
+        <div id="sidebar-placeholder"></div>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Topbar placeholder -->
+            <div id="topbar-placeholder"></div>
+
+            <!-- Settings Content -->
+            <main class="content-body">
+                <div class="page-header">
+                    <div class="page-title-group">
+                        <h2 class="page-title">System & Company Settings</h2>
+                        <span class="page-subtitle">Configure company details, user role security, languages, and database states</span>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- Column 1: Company Profile -->
+                    <div class="card">
+                        <h3 class="card-title">Company Profile Details</h3>
+                        <form id="company-settings-form" onsubmit="saveCompanySettings(event)">
+                            <div class="form-group">
+                                <label class="form-label">Company Trade Name *</label>
+                                <input type="text" class="form-control" id="sett-co-name" required>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Operations Email *</label>
+                                    <input type="email" class="form-control" id="sett-co-email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone Hotline *</label>
+                                    <input type="text" class="form-control" id="sett-co-phone" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">HQ Street Address *</label>
+                                <input type="text" class="form-control" id="sett-co-address" required>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">System Base Currency</label>
+                                    <select class="form-control" id="sett-co-currency">
+                                        <option value="USD">USD ($) United States Dollar</option>
+                                        <option value="EUR">EUR (€) Euro</option>
+                                        <option value="GBP">GBP (£) British Pound</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tax Rate VAT (%)</label>
+                                    <input type="number" class="form-control" id="sett-co-tax" min="0" max="100">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-4">Save Company Profile</button>
+                        </form>
+                    </div>
+
+                    <!-- Column 2: User Settings & Database Management -->
+                    <div style="display:flex; flex-direction:column; gap:24px;">
+                        <!-- User profile -->
+                        <div class="card">
+                            <h3 class="card-title">User Account Profile</h3>
+                            <form id="user-profile-form" onsubmit="saveUserProfile(event)">
+                                <div class="form-group">
+                                    <label class="form-label">User Display Name *</label>
+                                    <input type="text" class="form-control" id="sett-user-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Login Role (Switchable in topbar)</label>
+                                    <input type="text" class="form-control" id="sett-user-role" readonly style="background-color:var(--bg-app); cursor:not-allowed;">
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-4">Update Profile Name</button>
+                            </form>
+                        </div>
+
+                        <!-- System Database Seeder Tool -->
+                        <div class="card" style="border:1px solid rgba(239,68,68,0.3); background-color:rgba(239,68,68,0.02)">
+                            <h3 class="card-title" style="color:var(--accent-danger)">ERP Database Management</h3>
+                            <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:16px; line-height:1.4;">
+                                Resetting the database will purge all custom modifications, stock adjustments, invoices, and restore the initial default enterprise datasets.
+                            </p>
+                            <div class="d-flex gap-4">
+                                <button class="btn btn-danger" onclick="resetSystemDatabase()">
+                                    Purge & Restore Database Defaults
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roles and Permission Matrix -->
+                <div class="card mt-6">
+                    <h3 class="card-title">Role-Based Access Control (RBAC) Permissions Matrix</h3>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:16px;">
+                        Access privileges are enforced system-wide. Switch roles using the profile selector in the top bar to verify access restrictions.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="data-table" style="font-size:0.8rem">
+                            <thead>
+                                <tr>
+                                    <th>Role Designation</th>
+                                    <th>Dashboard</th>
+                                    <th>Products</th>
+                                    <th>Warehouses</th>
+                                    <th>Customers</th>
+                                    <th>Suppliers</th>
+                                    <th>Sales & billing</th>
+                                    <th>Purchases</th>
+                                    <th>Maintenance</th>
+                                    <th>BI Reports</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:600">Super Admin / GM</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600">Sales Manager / Rep</td>
+                                    <td>✅ View</td>
+                                    <td>✅ View</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ Full</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ Full</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ View</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600">Warehouse Manager</td>
+                                    <td>✅ View</td>
+                                    <td>✅ Full</td>
+                                    <td>✅ Full</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ View</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600">Accountant</td>
+                                    <td>✅ View</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ View</td>
+                                    <td>✅ View</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ Full</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:600">Maintenance Technician</td>
+                                    <td>✅ View</td>
+                                    <td>✅ View</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>❌ Block</td>
+                                    <td>✅ Full</td>
+                                    <td>❌ Block</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
-        <div class="tab-panel active" id="tabCompany">
-          <div class="card"><div class="card-body">
-            <form id="companyForm">
-              <div class="form-group"><label>Company Name</label><input name="name" class="form-control" required></div>
-              <div class="form-row"><div class="form-group"><label>Email</label><input name="email" type="email" class="form-control"></div><div class="form-group"><label>Phone</label><input name="phone" class="form-control"></div></div>
-              <div class="form-group"><label>Address</label><input name="address" class="form-control"></div>
-              <div class="form-group"><label>Tax Registration</label><input name="tax" class="form-control"></div>
-              <button type="submit" class="btn btn-primary">Save Company Info</button>
-            </form>
-          </div></div>
-        </div>
-        <div class="tab-panel" id="tabProfile">
-          <div class="card"><div class="card-body">
-            <form id="profileForm">
-              <div class="form-row"><div class="form-group"><label>Full Name</label><input name="name" class="form-control" required></div><div class="form-group"><label>Role</label><input name="role" class="form-control" readonly></div></div>
-              <div class="form-row"><div class="form-group"><label>Email</label><input name="email" type="email" class="form-control" readonly></div><div class="form-group"><label>Phone</label><input name="phone" class="form-control"></div></div>
-              <button type="submit" class="btn btn-primary">Update Profile</button>
-            </form>
-          </div></div>
-        </div>
-        <div class="tab-panel" id="tabTheme">
-          <div class="card"><div class="card-body">
-            <div class="form-group"><label>Theme</label><select id="themeSelect" class="form-control"><option value="light">Light Mode</option><option value="dark">Dark Mode</option></select></div>
-            <div class="form-group"><label>Language</label><select id="languageSelect" class="form-control"><option value="en">English</option><option value="ar">Arabic</option></select></div>
-          </div></div>
-        </div>
-      </div>
     </div>
-  </div>
-  <script src="js/app.js"></script><script src="js/sales.js"></script>
-  <script>document.querySelectorAll('.nav-menu a').forEach((a,i)=>{a.insertAdjacentHTML('afterbegin',[Icons.dashboard,Icons.products,Icons.customers,Icons.suppliers,Icons.warehouse,Icons.sales,Icons.purchases,Icons.maintenance,Icons.reports,Icons.settings][i]);});document.querySelector('.sidebar-brand').insertAdjacentHTML('afterbegin',Icons.logo);</script>
-</body></html>
+
+    <!-- AI Chat placeholder -->
+    <div id="ai-chat-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof ProFixERP !== 'undefined') {
+                ProFixERP.enforcePagePermissions('settings');
+            }
+            loadSettingsForm();
+        });
+
+        function loadSettingsForm() {
+            // Load Company Settings
+            const settings = JSON.parse(localStorage.getItem('proFix_settings') || '{}');
+            document.getElementById('sett-co-name').value = settings.companyName || '';
+            document.getElementById('sett-co-email').value = settings.email || '';
+            document.getElementById('sett-co-phone').value = settings.phone || '';
+            document.getElementById('sett-co-address').value = settings.address || '';
+            document.getElementById('sett-co-currency').value = settings.currency || 'USD';
+            document.getElementById('sett-co-tax').value = settings.taxRate || 15;
+
+            // Load User Account Settings
+            const sessionUser = sessionStorage.getItem('proFix_auth_user');
+            if (sessionUser) {
+                const u = JSON.parse(sessionUser);
+                const activeRole = localStorage.getItem('proFix_active_role') || u.role;
+                document.getElementById('sett-user-name').value = u.name || '';
+                document.getElementById('sett-user-role').value = activeRole;
+            }
+        }
+
+        // Save company profiles settings
+        function saveCompanySettings(e) {
+            e.preventDefault();
+            const coName = document.getElementById('sett-co-name').value;
+            const email = document.getElementById('sett-co-email').value;
+            const phone = document.getElementById('sett-co-phone').value;
+            const address = document.getElementById('sett-co-address').value;
+            const currency = document.getElementById('sett-co-currency').value;
+            const tax = parseInt(document.getElementById('sett-co-tax').value || 15);
+
+            const settings = JSON.parse(localStorage.getItem('proFix_settings') || '{}');
+            settings.companyName = coName;
+            settings.email = email;
+            settings.phone = phone;
+            settings.address = address;
+            settings.currency = currency;
+            settings.taxRate = tax;
+
+            localStorage.setItem('proFix_settings', JSON.stringify(settings));
+            
+            if (typeof ProFixERP !== 'undefined') {
+                ProFixERP.showToast("Company profile details updated!");
+            }
+        }
+
+        // Save active user configurations
+        function saveUserProfile(e) {
+            e.preventDefault();
+            const name = document.getElementById('sett-user-name').value;
+            const sessionUser = sessionStorage.getItem('proFix_auth_user');
+            
+            if (sessionUser) {
+                const u = JSON.parse(sessionUser);
+                u.name = name;
+                sessionStorage.setItem('proFix_auth_user', JSON.stringify(u));
+                
+                if (typeof ProFixERP !== 'undefined') {
+                    ProFixERP.showToast("User profile display name updated.");
+                    // Reload topbar
+                    setTimeout(() => window.location.reload(), 800);
+                }
+            }
+        }
+
+        // Database purge seeder
+        function resetSystemDatabase() {
+            if (confirm("CRITICAL WARNING: This will completely purge the LocalStorage databases and restore default warehouse catalog variables. Continue?")) {
+                localStorage.removeItem('proFix_products');
+                localStorage.removeItem('proFix_customers');
+                localStorage.removeItem('proFix_suppliers');
+                localStorage.removeItem('proFix_sales');
+                localStorage.removeItem('proFix_purchases');
+                localStorage.removeItem('proFix_maintenance');
+                localStorage.removeItem('proFix_warehouses');
+                localStorage.removeItem('proFix_warehouse_allocations');
+                localStorage.removeItem('proFix_warehouse_transfers');
+                localStorage.removeItem('proFix_financials');
+                localStorage.removeItem('proFix_employees');
+                localStorage.removeItem('proFix_settings');
+                localStorage.removeItem('proFix_notifications');
+
+                // Seed again
+                if (typeof ProFixERP !== 'undefined') {
+                    ProFixERP.seedDatabase();
+                    ProFixERP.showToast("Database restored successfully!", "success");
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,52 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reports — ProFix ERP</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/responsive.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Reports - ProFix ERP</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .report-tab-nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .report-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .report-tab-btn:hover {
+            color: var(--text-primary);
+            background-color: var(--border-color);
+        }
+
+        .report-tab-btn.active {
+            color: white;
+            background-color: var(--primary-color);
+        }
+
+        .report-section {
+            display: none;
+        }
+
+        .report-section.active {
+            display: block;
+        }
+
+        .chart-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
 </head>
 <body>
-  <div class="app-layout">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><span>ProFix ERP</span></div>
-      <ul class="nav-menu">
-        <li><a href="dashboard.html"><span class="nav-label">Dashboard</span></a></li>
-        <li><a href="products.html"><span class="nav-label">Products</span></a></li>
-        <li><a href="customers.html"><span class="nav-label">Customers</span></a></li>
-        <li><a href="suppliers.html"><span class="nav-label">Suppliers</span></a></li>
-        <li><a href="warehouse.html"><span class="nav-label">Warehouse</span></a></li>
-        <li><a href="sales.html"><span class="nav-label">Sales</span></a></li>
-        <li><a href="purchases.html"><span class="nav-label">Purchases</span></a></li>
-        <li><a href="maintenance.html"><span class="nav-label">Maintenance</span></a></li>
-        <li><a href="reports.html" class="active"><span class="nav-label">Reports</span></a></li>
-        <li><a href="settings.html"><span class="nav-label">Settings</span></a></li>
-      </ul>
-    </aside>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="main-content">
-      <nav class="navbar">
-        <button class="navbar-toggle" id="sidebarToggle">☰</button>
-        <div class="navbar-search"><input type="text" id="globalSearch" placeholder="Search..."></div>
-        <div class="navbar-actions"><button class="icon-btn" id="themeToggle">🌓</button><div class="navbar-user"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Admin</span></div><a href="#" id="logoutBtn" class="btn btn-sm btn-secondary">Logout</a></div>
-      </nav>
-      <div class="page-content">
-        <div class="page-header"><div><h1>Reports</h1><p>Sales, inventory & financial reports</p></div>
-          <select class="form-control" id="reportFilter" style="width:auto"><option value="all">All Time</option><option value="month">This Month</option><option value="quarter">This Quarter</option></select>
+    <div class="app-container">
+        <!-- Sidebar placeholder -->
+        <div id="sidebar-placeholder"></div>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Topbar placeholder -->
+            <div id="topbar-placeholder"></div>
+
+            <!-- Reports and BI page -->
+            <main class="content-body">
+                <div class="page-header">
+                    <div class="page-title-group">
+                        <h2 class="page-title">Business Intelligence (BI) & Reports</h2>
+                        <span class="page-subtitle">Interactive performance charts, tax reports, and predictive forecasting</span>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" onclick="window.print()">
+                            Print PDF Report
+                        </button>
+                        <button class="btn btn-primary" onclick="ProFixERP.showToast('Generating BI excel spreadsheet report...', 'success')">
+                            Export Excel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="report-tab-nav">
+                    <button class="report-tab-btn active" onclick="switchReportTab(event, 'sales-report')">Sales Analysis</button>
+                    <button class="report-tab-btn" onclick="switchReportTab(event, 'inv-report')">Inventory & Forecast</button>
+                    <button class="report-tab-btn" onclick="switchReportTab(event, 'finance-report')">P&L Financials</button>
+                    <button class="report-tab-btn" onclick="switchReportTab(event, 'maintenance-report')">Service Maintenance</button>
+                </div>
+
+                <!-- =========================================================================
+                     SALES REPORT TAB
+                     ========================================================================= -->
+                <div class="report-section active" id="sales-report">
+                    <div class="grid-2">
+                        <div class="chart-box">
+                            <h3 class="card-title">Booked Sales Trend (2026 YTD)</h3>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="rep-sales-trend-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h3 class="card-title">Sales Revenue by Category</h3>
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="rep-sales-category-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================================
+                     INVENTORY & FORECAST TAB
+                     ========================================================================= -->
+                <div class="report-section" id="inv-report">
+                    <div class="grid-3 mb-6" style="grid-template-columns: 1fr 2fr; gap:24px;">
+                        <!-- Forecast controls -->
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:12px;">AI Runout Estimator</h3>
+                            <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:16px;">
+                                Choose a product to forecast inventory depletion and project potential stockouts.
+                            </p>
+                            <div class="form-group">
+                                <label class="form-label">Select Catalog Product</label>
+                                <select class="form-control" id="forecast-product-select" onchange="updateForecastChart()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div style="margin-top:20px; font-size:0.8rem; line-height:1.4; border-top:1px solid var(--border-color); padding-top:12px;">
+                                <strong>AI Insight:</strong>
+                                <span id="forecast-insight" style="display:block; color:var(--accent-warning); margin-top:4px;">Loading forecast metrics...</span>
+                            </div>
+                        </div>
+
+                        <!-- Forecast Chart -->
+                        <div class="chart-box" style="margin-bottom:0;">
+                            <h3 class="card-title">Inventory Stock Level Forecast (Next 30 Days)</h3>
+                            <div style="height: 280px; position: relative;">
+                                <canvas id="rep-inventory-forecast-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compare Warehouses -->
+                    <div class="chart-box">
+                        <h3 class="card-title">Warehouse Stocks Comparison</h3>
+                        <div style="height:250px; position:relative;">
+                            <canvas id="rep-warehouse-bar-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================================
+                     FINANCIALS TAB
+                     ========================================================================= -->
+                <div class="report-section" id="finance-report">
+                    <div class="grid-3 mb-6">
+                        <div class="card" style="border-left: 4px solid var(--accent-success);">
+                            <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase;">Gross Margins Income</div>
+                            <div style="font-size:1.6rem; font-weight:700; color:var(--accent-success); margin:6px 0;" id="fin-income-total">$0.00</div>
+                            <span style="font-size:0.75rem; color:var(--text-light)">From billing invoice records</span>
+                        </div>
+                        <div class="card" style="border-left: 4px solid var(--accent-danger);">
+                            <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase;">Operating Expenditures</div>
+                            <div style="font-size:1.6rem; font-weight:700; color:var(--accent-danger); margin:6px 0;" id="fin-expense-total">$0.00</div>
+                            <span style="font-size:0.75rem; color:var(--text-light)">Staff payroll, rent, procurement POs</span>
+                        </div>
+                        <div class="card" style="border-left: 4px solid var(--primary-color);">
+                            <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase;">Net Profit & Loss (P&L)</div>
+                            <div style="font-size:1.6rem; font-weight:700; color:var(--primary-color); margin:6px 0;" id="fin-net-profit">$0.00</div>
+                            <span style="font-size:0.75rem; color:var(--text-light)">Before tax calculations</span>
+                        </div>
+                    </div>
+
+                    <!-- Journal transactions ledger -->
+                    <div class="card">
+                        <h3 class="card-title">Accounting Ledger Transactions</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Expense/Income Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reports-ledger-tbody">
+                                    <!-- Filled dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================================
+                     MAINTENANCE REPORT TAB
+                     ========================================================================= -->
+                <div class="report-section" id="maintenance-report">
+                    <div class="card mb-6">
+                        <h3 class="card-title">Technician Performance Summary</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Technician Name</th>
+                                        <th>Repairs Completed</th>
+                                        <th>Active/In-Progress Jobs</th>
+                                        <th>Main Equipment Serviced</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight:600">Dave Miller (Lead)</td>
+                                        <td>14 Jobs</td>
+                                        <td>1 Job</td>
+                                        <td>Heavy Duty Workshop Lathe Machine</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:600">Alex Rivera (Tech)</td>
+                                        <td>9 Jobs</td>
+                                        <td>2 Jobs</td>
+                                        <td>Gold Casting Induction Furnace</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
-        <div class="stats-grid" id="reportStats"></div>
-        <div class="charts-row">
-          <div class="card"><div class="card-header">Sales Report</div><div class="card-body"><div class="chart-container"><canvas id="reportSalesChart"></canvas></div></div></div>
-          <div class="card"><div class="card-header">Inventory Report</div><div class="card-body"><div class="chart-container"><canvas id="reportInventoryChart"></canvas></div></div></div>
-        </div>
-        <div class="card"><div class="card-header">Financial Transactions</div><div class="card-body table-wrap">
-          <table><thead><tr><th>Reference</th><th>Type</th><th>Party</th><th>Amount</th><th>Date</th></tr></thead><tbody id="reportTableBody"></tbody></table>
-        </div></div>
-      </div>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/app.js"></script><script src="js/charts.js"></script><script src="js/sales.js"></script>
-  <script>document.querySelectorAll('.nav-menu a').forEach((a,i)=>{a.insertAdjacentHTML('afterbegin',[Icons.dashboard,Icons.products,Icons.customers,Icons.suppliers,Icons.warehouse,Icons.sales,Icons.purchases,Icons.maintenance,Icons.reports,Icons.settings][i]);});document.querySelector('.sidebar-brand').insertAdjacentHTML('afterbegin',Icons.logo);</script>
-</body></html>
+
+    <!-- AI Chat placeholder -->
+    <div id="ai-chat-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    <script>
+        // Track rendered charts to avoid overlaps/duplications on resize
+        let salesTrendChart = null;
+        let salesCatChart = null;
+        let forecastChart = null;
+        let warehouseChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof ProFixERP !== 'undefined') {
+                ProFixERP.enforcePagePermissions('reports');
+            }
+            
+            // Build Initial sales reports
+            renderSalesReportCharts();
+            populateForecastProductDropdown();
+        });
+
+        // Tab Switching
+        function switchReportTab(e, sectionId) {
+            document.querySelectorAll('.report-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.report-section').forEach(sec => sec.classList.remove('active'));
+
+            e.target.classList.add('active');
+            const targetSec = document.getElementById(sectionId);
+            if (targetSec) targetSec.classList.add('active');
+
+            // Trigger chart draws depending on active tab
+            if (sectionId === 'sales-report') {
+                renderSalesReportCharts();
+            } else if (sectionId === 'inv-report') {
+                renderInventoryReportCharts();
+            } else if (sectionId === 'finance-report') {
+                renderFinanceReports();
+            }
+        }
+
+        // DRAW SALES CHARTS
+        function renderSalesReportCharts() {
+            if (typeof ProFixCharts === 'undefined') return;
+
+            // Destroy previous charts if existing
+            if (salesTrendChart) salesTrendChart.destroy();
+            if (salesCatChart) salesCatChart.destroy();
+
+            const sales = JSON.parse(localStorage.getItem('proFix_sales') || '[]');
+            const monthlyRevenue = sales
+                .filter(s => s.date.startsWith('2026-07') && s.status !== 'Cancelled')
+                .reduce((acc, s) => acc + s.total, 0);
+
+            // Sales line chart YTD
+            const monthlyAggs = [15000, 18500, 14200, 24000, 29000, 31000, monthlyRevenue || 18000];
+            salesTrendChart = ProFixCharts.renderSalesTrend('rep-sales-trend-canvas', monthlyAggs);
+
+            // Category doughnut chart
+            const products = JSON.parse(localStorage.getItem('proFix_products') || '[]');
+            const catMap = {};
+            products.forEach(p => {
+                catMap[p.category] = (catMap[p.category] || 0) + p.quantity;
+            });
+            const catChartData = Object.keys(catMap).map(cat => ({
+                category: cat,
+                count: catMap[cat]
+            }));
+
+            salesCatChart = ProFixCharts.renderCategoryDistribution('rep-sales-category-canvas', catChartData);
+        }
+
+        // DRAW INVENTORY CHARTS
+        function renderInventoryReportCharts() {
+            if (typeof ProFixCharts === 'undefined') return;
+
+            if (warehouseChart) warehouseChart.destroy();
+
+            // Render warehouse comparison bar chart
+            const warehouses = JSON.parse(localStorage.getItem('proFix_warehouses') || '[]');
+            const allocations = JSON.parse(localStorage.getItem('proFix_warehouse_allocations') || '[]');
+            
+            const datasets = warehouses.map(wh => {
+                const totalStock = allocations
+                    .filter(a => a.warehouseId === wh.id)
+                    .reduce((sum, a) => sum + a.quantity, 0);
+                return { name: wh.name, totalStock: totalStock };
+            });
+
+            warehouseChart = ProFixCharts.renderWarehouseComparison('rep-warehouse-bar-canvas', datasets);
+
+            // Draw forecast chart
+            updateForecastChart();
+        }
+
+        // Dynamic forecast picker populate
+        function populateForecastProductDropdown() {
+            const products = JSON.parse(localStorage.getItem('proFix_products') || '[]');
+            const select = document.getElementById('forecast-product-select');
+            if (select) {
+                select.innerHTML = products.map(p => `<option value="${p.id}">${p.name} (Stock: ${p.quantity})</option>`).join('');
+            }
+        }
+
+        function updateForecastChart() {
+            if (typeof ProFixCharts === 'undefined') return;
+
+            const select = document.getElementById('forecast-product-select');
+            if (!select || select.value === '') return;
+
+            const products = JSON.parse(localStorage.getItem('proFix_products') || '[]');
+            const p = products.find(prod => prod.id === select.value);
+            
+            if (p) {
+                if (forecastChart) forecastChart.destroy();
+
+                forecastChart = ProFixCharts.renderInventoryForecast('rep-inventory-forecast-canvas', p.name, p.quantity);
+
+                // Populate AI advice text
+                const insightSpan = document.getElementById('forecast-insight');
+                if (insightSpan) {
+                    if (p.quantity === 0) {
+                        insightSpan.textContent = `CRITICAL: Stock is currently fully depleted. Reorder immediately.`;
+                        insightSpan.style.color = 'var(--accent-danger)';
+                    } else if (p.quantity <= 3) {
+                        insightSpan.textContent = `WARNING: Running low. Projected runout in less than 3 days. A PO should be approved.`;
+                        insightSpan.style.color = 'var(--accent-danger)';
+                    } else {
+                        const daysLeft = Math.round(p.quantity * 0.85); // simple factor
+                        insightSpan.textContent = `OPTIMAL: Current stocks will sustain operations for approximately ${daysLeft} days.`;
+                        insightSpan.style.color = 'var(--accent-success)';
+                    }
+                }
+            }
+        }
+
+        // FINANCIAL REPORT STATS & TABLE LEDGER
+        function renderFinanceReports() {
+            const financials = JSON.parse(localStorage.getItem('proFix_financials') || '[]');
+            const tbody = document.getElementById('reports-ledger-tbody');
+
+            if (!tbody) return;
+
+            // Compute margins
+            const incomeTotal = financials.filter(f => f.type === 'Income').reduce((sum, f) => sum + f.amount, 0);
+            const expenseTotal = financials.filter(f => f.type === 'Expense').reduce((sum, f) => sum + f.amount, 0);
+            const netProfit = incomeTotal - expenseTotal;
+
+            document.getElementById('fin-income-total').textContent = `$${incomeTotal.toLocaleString('en-US', { minimumFractionDigits:2 })}`;
+            document.getElementById('fin-expense-total').textContent = `$${expenseTotal.toLocaleString('en-US', { minimumFractionDigits:2 })}`;
+            
+            const netEl = document.getElementById('fin-net-profit');
+            netEl.textContent = `$${netProfit.toLocaleString('en-US', { minimumFractionDigits:2 })}`;
+            netEl.style.color = netProfit >= 0 ? 'var(--accent-success)' : 'var(--accent-danger)';
+
+            // Render table
+            const sortedLedger = [...financials].sort((a, b) => new Date(b.date) - new Date(a.date));
+            if (sortedLedger.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center">No transactions on ledger</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sortedLedger.map(f => {
+                const amountColor = f.type === 'Income' ? 'var(--accent-success)' : 'var(--accent-danger)';
+                const typeBadge = f.type === 'Income' ? 'badge-success' : 'badge-danger';
+
+                return `
+                    <tr>
+                        <td>${f.date}</td>
+                        <td><span class="badge ${typeBadge}">${f.type}</span></td>
+                        <td style="font-weight:600;">${f.category}</td>
+                        <td>${f.description}</td>
+                        <td style="font-weight:700; color:${amountColor}">
+                            ${f.type === 'Income' ? '+' : '-'}$${f.amount.toFixed(2)}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

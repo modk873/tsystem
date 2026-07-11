@@ -1,53 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warehouse — ProFix ERP</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/responsive.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouses & Stock Control - ProFix ERP</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-  <div class="app-layout">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><span>ProFix ERP</span></div>
-      <ul class="nav-menu">
-        <li><a href="dashboard.html"><span class="nav-label">Dashboard</span></a></li>
-        <li><a href="products.html"><span class="nav-label">Products</span></a></li>
-        <li><a href="customers.html"><span class="nav-label">Customers</span></a></li>
-        <li><a href="suppliers.html"><span class="nav-label">Suppliers</span></a></li>
-        <li><a href="warehouse.html" class="active"><span class="nav-label">Warehouse</span></a></li>
-        <li><a href="sales.html"><span class="nav-label">Sales</span></a></li>
-        <li><a href="purchases.html"><span class="nav-label">Purchases</span></a></li>
-        <li><a href="maintenance.html"><span class="nav-label">Maintenance</span></a></li>
-        <li><a href="reports.html"><span class="nav-label">Reports</span></a></li>
-        <li><a href="settings.html"><span class="nav-label">Settings</span></a></li>
-      </ul>
-    </aside>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="main-content">
-      <nav class="navbar">
-        <button class="navbar-toggle" id="sidebarToggle">☰</button>
-        <div class="navbar-search"><input type="text" id="globalSearch" placeholder="Search..."></div>
-        <div class="navbar-actions"><button class="icon-btn" id="themeToggle">🌓</button><div class="navbar-user"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Admin</span></div><a href="#" id="logoutBtn" class="btn btn-sm btn-secondary">Logout</a></div>
-      </nav>
-      <div class="page-content">
-        <div class="page-header"><div><h1>Warehouse & Inventory</h1><p id="warehouseInfo"></p></div><button class="btn btn-primary" id="addStockBtn">+ Stock Movement</button></div>
-        <div class="tabs" id="warehouseTabs"></div>
-        <div class="card" style="margin-bottom:20px"><div class="card-header">Inventory</div><div class="card-body table-wrap">
-          <table><thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Qty</th><th>Cost</th><th>Price</th><th>Status</th></tr></thead><tbody id="inventoryBody"></tbody></table>
-        </div></div>
-        <div class="card"><div class="card-header">Stock Movements</div><div class="card-body table-wrap">
-          <table><thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Qty</th><th>Note</th></tr></thead><tbody id="movementsBody"></tbody></table>
-        </div></div>
-      </div>
+    <div class="app-container">
+        <!-- Sidebar placeholder -->
+        <div id="sidebar-placeholder"></div>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Topbar placeholder -->
+            <div id="topbar-placeholder"></div>
+
+            <!-- Warehouse Inventory Page -->
+            <main class="content-body">
+                <div class="page-header">
+                    <div class="page-title-group">
+                        <h2 class="page-title">Warehouses & Logistics</h2>
+                        <span class="page-subtitle">Manage multi-location stock balances, audits, and warehouse transfers</span>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-primary" id="transfer-stock-btn">
+                            ➔ Stock Transfer (Relocate)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barcode Scanner Card -->
+                <div class="card mb-6">
+                    <h3 class="card-title">Barcode Scanner Simulator</h3>
+                    <div class="d-flex align-center gap-4" style="flex-wrap: wrap;">
+                        <div style="flex-grow:1; min-width: 250px; position:relative;">
+                            <input type="text" class="form-control" id="scanner-simulate-input" placeholder="Enter product barcode and press Enter..." style="width: 100%; padding-left: 36px;">
+                            <svg style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--text-secondary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-16v.01M4 12h2m10 0h2m-2 0a2 2 0 11-4 0m0 0a2 2 0 114 0"></path></svg>
+                        </div>
+                        <button class="btn btn-secondary" id="scanner-simulate-btn">
+                            [📷] Simulate Scan
+                        </button>
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-top:8px;">Scanning a barcode instantly brings up the stock adjustment dialogue for that specific inventory item.</span>
+                </div>
+
+                <!-- Warehouses Summary Grid -->
+                <div class="grid-3 mb-6" id="warehouses-grid-summary">
+                    <!-- Populated dynamically by warehouse.js -->
+                </div>
+
+                <!-- Master Allocations Table -->
+                <div class="card mb-6">
+                    <h3 class="card-title">Multi-Warehouse Allocations Matrix</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Details</th>
+                                    <th>Category</th>
+                                    <th>Main WH (Central)</th>
+                                    <th>East WH (Depot)</th>
+                                    <th>Gold WH (Depot)</th>
+                                    <th>Global Total</th>
+                                    <th>Adjustment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-allocations-tbody">
+                                <!-- Populated dynamically by warehouse.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Stock Movement Logs -->
+                <div class="card">
+                    <h3 class="card-title">Stock Movement Audit Trail</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transfer ID</th>
+                                    <th>Item Details</th>
+                                    <th>Route</th>
+                                    <th>Quantity Relocated</th>
+                                    <th>Date</th>
+                                    <th>Transfer Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transfer-logs-tbody">
+                                <!-- Populated dynamically by warehouse.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
-  </div>
-  <div class="modal-overlay" id="stockModal"><div class="modal"><div class="modal-header">Stock Movement<button data-close-modal class="icon-btn">✕</button></div>
-    <form id="stockForm"><div class="modal-body">
-      <div class="form-group"><label>Product</label><select name="productId" class="form-control" required></select></div>
-      <div class="form-row"><div class="form-group"><label>Type</label><select name="type" class="form-control"><option value="in">Stock In</option><option value="out">Stock Out</option></select></div><div class="form-group"><label>Quantity</label><input name="qty" type="number" class="form-control" required min="1"></div></div>
-      <div class="form-group"><label>Note</label><input name="note" class="form-control"></div>
-    </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-close-modal>Cancel</button><button type="submit" class="btn btn-primary">Record</button></div></form></div></div>
-  <script src="js/app.js"></script><script src="js/warehouse.js"></script>
-  <script>document.querySelectorAll('.nav-menu a').forEach((a,i)=>{a.insertAdjacentHTML('afterbegin',[Icons.dashboard,Icons.products,Icons.customers,Icons.suppliers,Icons.warehouse,Icons.sales,Icons.purchases,Icons.maintenance,Icons.reports,Icons.settings][i]);});document.querySelector('.sidebar-brand').insertAdjacentHTML('afterbegin',Icons.logo);</script>
-</body></html>
+
+    <!-- Stock Transfer Modal -->
+    <div class="modal" id="transfer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Relocate Inventory Stock</h3>
+                <button class="modal-close-btn" id="close-transfer-modal">&times;</button>
+            </div>
+            <form id="transfer-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Select Product *</label>
+                        <select class="form-control" id="transfer-product" required>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Source Warehouse *</label>
+                            <select class="form-control" id="transfer-from-wh" required>
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Destination Warehouse *</label>
+                            <select class="form-control" id="transfer-to-wh" required>
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Transfer Quantity *</label>
+                        <input type="number" class="form-control" id="transfer-qty" min="1" required placeholder="e.g. 5">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancel-transfer-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Process Transfer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Chat placeholder -->
+    <div id="ai-chat-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/warehouse.js"></script>
+</body>
+</html>

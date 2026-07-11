@@ -1,42 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — ProFix ERP</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ProFix Industrial Supplies ERP</title>
+    <!-- CSS files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .login-page-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100vw;
+            background: linear-gradient(135deg, #090d16 0%, #151f32 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background-color: rgba(21, 31, 50, 0.8);
+            border: 1px solid #24324d;
+            border-radius: 16px;
+            padding: 40px 32px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .login-header-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .login-header-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        /* Demo credentials helper drawer */
+        .demo-helpers {
+            background-color: rgba(15, 82, 186, 0.08);
+            border: 1px dashed rgba(15, 82, 186, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 24px;
+        }
+
+        .demo-helpers-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .demo-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .demo-role-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .demo-role-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
 </head>
 <body>
-  <div class="login-page">
-    <div class="login-card">
-      <div class="login-logo">
-        <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#1e5aa8"/><path d="M8 22V10l8-4 8 4v12l-8 4-8-4z" stroke="#fff" stroke-width="2" fill="none"/></svg>
-        <h1>ProFix Industrial Supplies</h1>
-        <p>Enterprise Resource Planning</p>
-      </div>
-      <form id="loginForm">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" class="form-control" id="email" value="admin@profix.com" required>
+    <div class="login-page-container">
+        <div class="login-card">
+            <div class="login-logo">PF</div>
+            <h2 class="login-header-title">ProFix Industrial Supplies</h2>
+            <div class="login-header-subtitle">Enterprise ERP Control Panel</div>
+
+            <!-- Demo helper card -->
+            <div class="demo-helpers">
+                <div class="demo-helpers-title">Demo Access Switchboard</div>
+                <div class="demo-buttons-grid">
+                    <button class="demo-role-btn" onclick="quickLogin('Super Admin', 'Dev Admin')">Super Admin</button>
+                    <button class="demo-role-btn" onclick="quickLogin('Accountant', 'Jane Smith')">Accountant</button>
+                    <button class="demo-role-btn" onclick="quickLogin('Warehouse Manager', 'Sarah Collins')">Warehouse Mgr</button>
+                    <button class="demo-role-btn" onclick="quickLogin('Maintenance Technician', 'David Miller')">Maint Tech</button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label" style="color: #cbd5e1">Email Address</label>
+                    <input type="email" class="form-control" id="login-email" required placeholder="name@profix-supplies.com" style="background-color:#0f172a; border-color:#24324d; color:white;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <div class="d-flex justify-between align-center">
+                        <label class="form-label" style="color: #cbd5e1">Password</label>
+                        <a href="#" onclick="alert('Simulated recovery email sent to registered account.')" style="font-size:0.75rem; color:#38bdf8; text-decoration:none;">Forgot?</a>
+                    </div>
+                    <input type="password" class="form-control" id="login-password" required placeholder="••••••••" style="background-color:#0f172a; border-color:#24324d; color:white;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <select class="form-control" id="login-role-select" required style="background-color:#0f172a; border-color:#24324d; color:white;">
+                        <option value="Super Admin">Login Role: Super Admin</option>
+                        <option value="General Manager">Login Role: General Manager</option>
+                        <option value="Sales Manager">Login Role: Sales Manager</option>
+                        <option value="Warehouse Manager">Login Role: Warehouse Manager</option>
+                        <option value="Accountant">Login Role: Accountant</option>
+                        <option value="Purchasing Officer">Login Role: Purchasing Officer</option>
+                        <option value="Maintenance Technician">Login Role: Maintenance Technician</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Sign In</button>
+            </form>
+
+            <div style="text-align:center; margin-top:24px; font-size:0.8rem; color:var(--text-secondary)">
+                Need an account? <a href="#" onclick="alert('Register screen simulated. Access via Demo Switchboard above.')" style="color:#38bdf8; text-decoration:none; font-weight:600;">Contact Administrator</a>
+            </div>
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" class="form-control" id="password" value="admin123" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;padding:12px">Sign In</button>
-      </form>
-      <p style="text-align:center;margin-top:16px;font-size:.8rem;color:var(--text-muted)">Demo: admin@profix.com / admin123</p>
     </div>
-  </div>
-  <script src="js/app.js"></script>
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      if (App.login(email, password)) location.href = 'dashboard.html';
-      else App.notify('Invalid credentials', 'error');
-    });
-  </script>
+
+    <!-- Core App Seeder Logic -->
+    <script src="js/app.js"></script>
+    <script>
+        // Handle normal email/password logins
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const role = document.getElementById('login-role-select').value;
+            
+            // Generate clean user name from email
+            const rawName = email.split('@')[0];
+            const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+            const user = {
+                name: name + " (" + role.split(' ')[0] + ")",
+                email: email,
+                role: role
+            };
+
+            sessionStorage.setItem('proFix_auth_user', JSON.stringify(user));
+            localStorage.setItem('proFix_active_role', role);
+            
+            window.location.href = 'dashboard.html';
+        }
+
+        // Quick login from buttons helper
+        function quickLogin(role, name) {
+            const user = {
+                name: name,
+                email: name.toLowerCase().replace(' ', '.') + "@profix-supplies.com",
+                role: role
+            };
+
+            sessionStorage.setItem('proFix_auth_user', JSON.stringify(user));
+            localStorage.setItem('proFix_active_role', role);
+            
+            window.location.href = 'dashboard.html';
+        }
+    </script>
 </body>
 </html>
